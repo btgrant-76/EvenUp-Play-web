@@ -1,4 +1,5 @@
-@(participants: Seq[Participants.Participant], tracker: String)
+@import controllers.Participants.Participant
+@(participants: Seq[Participant], form: Form[Participant])
 
 @main("Add Participants") {
 
@@ -9,12 +10,10 @@
       }
   </ul>
 
-  <form method="POST" action="/participants">
-      <input type="text" width="name" name="name" id="bar"/>
+  @helper.form(action = routes.Participants.addParticipant) {
+      @helper.inputText(form("name"))
       <br>
       <button type="submit">Add Participant</button>
-      <input type="hidden" value="@tracker"/>
-  </form>
-
+  }
 
 }
