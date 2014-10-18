@@ -20,12 +20,12 @@ object Participants extends Controller {
   def loadParticipantListPage = Action { implicit request =>
     Logger.info("called loadParticipantListPage")
 
-    val stuffs: Seq[Participant] = if (request.session.get("foo").isDefined) {
+    val stuffs: Seq[Participant] = // if (request.session.get("foo").isDefined) {
       Cache.getOrElse("bar") { Seq[Participant]() }
-    } else {
-      Logger.info("session.foo is undefined")
-      Seq()
-    }
+//    } else {
+//      Logger.info("session.foo is undefined")
+//      Seq()
+//    }
 
     Ok(views.html.view_participant_names(stuffs, "tracker"))
   }
