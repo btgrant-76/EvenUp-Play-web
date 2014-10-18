@@ -1,0 +1,20 @@
+@(participants: Seq[Participants.Participant], tracker: String)
+
+@main("Add Participants") {
+
+  <h2>Participants</h2>
+  <ul>
+     @participants.map { p =>
+        <li>@p.name</li>
+      }
+  </ul>
+
+  <form method="POST" action="/participants">
+      <input type="text" width="name" name="name" id="bar"/>
+      <br>
+      <button type="submit">Add Participant</button>
+      <input type="hidden" value="@tracker"/>
+  </form>
+
+
+}
