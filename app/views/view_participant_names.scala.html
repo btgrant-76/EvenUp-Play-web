@@ -1,4 +1,4 @@
-@import controllers.Participants.Participant
+@import models.Participant
 @(participants: Seq[Participant], form: Form[Participant])
 
 @main("Add Participants") {
@@ -11,9 +11,14 @@
   </ul>
 
   @helper.form(action = routes.Participants.addParticipant) {
-      @helper.inputText(form("name"))
+      <!--@helper.inputText(form("name"))-->
+      <input name="name" autofocus="true"/>
       <br>
       <button type="submit">Add Participant</button>
+  }
+
+  @helper.form(action = routes.Expenses.index) {
+      <button type="submit">Enter Expenses</button>
   }
 
 }

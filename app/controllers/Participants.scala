@@ -2,6 +2,7 @@ package controllers
 
 import java.util.UUID
 
+import models.Participant
 import play.api.Logger
 import play.api.Play.current
 import play.api.cache.Cache
@@ -12,10 +13,6 @@ import play.api.mvc.{Action, Controller}
 
 object Participants extends Controller {
 
-  val SESSION_PARTICIPANTS_KEY = "session.participants"
-
-  case class Participant(name: String)
-
   val participantForm: Form[Participant] = Form(
     mapping(
       "name" -> nonEmptyText
@@ -25,14 +22,9 @@ object Participants extends Controller {
   def loadParticipantListPage = Action { implicit request =>
     Logger.info("called loadParticipantListPage")
 
-    val participantsFromCache = request.session.get(SESSION_PARTICIPANTS_KEY)
-      .map { value =>
-        println(s"$SESSION_PARTICIPANTS_KEY -> $value")
-        Cache.getOrElse(value){ Seq[Participant]() }
-      }
+    val participantsFromCache = Participant.getParticipantsFromCache(request.session)
 
-
-    Ok(views.html.view_participant_names(participantsFromCache.getOrElse(Seq()), participantForm))
+    Ok(views.html.view_participant_names(participantsFromCache, participantForm))
   }
 
   def addParticipant = Action { implicit request =>
@@ -48,18 +40,20 @@ object Participants extends Controller {
 
       val participantsKey: String = if (request.session.isEmpty) {
         val participantsCacheKey = UUID.randomUUID().toString
-        request.session + (SESSION_PARTICIPANTS_KEY -> participantsCacheKey)
+        request.session + (Participant.SESSION_KEY -> participantsCacheKey)
         participantsCacheKey
       } else {
-        request.session.get(SESSION_PARTICIPANTS_KEY)
+        request.session.get(Participant.SESSION_KEY)
       }.get // TODO is this safe?
 
-      val participants: Seq[Participant] = Cache.getOrElse(participantsKey) { Seq[Participant]() }
-      val newParticipants: Seq[Participant] =  participants :+ newParticipant
+      val participants: Seq[Participant] = // Cache.getOrElse(participantsKey) { Seq[Participant]() }
+        Participant.getParticipantsFromCache(request.session)
+      val newParticipants: Seq[Participant] =  (participants :+ newParticipant)
+        .sortWith {(p1: Participant, p2: Participant) => p1.name < p2.name }
       Cache.set(participantsKey, newParticipants)
 
       Ok(views.html.view_participant_names(newParticipants, participantForm))
-        .withSession(request.session + (SESSION_PARTICIPANTS_KEY, participantsKey)) // TODO redundant?
+        .withSession(request.session + (Participant.SESSION_KEY, participantsKey)) // TODO redundant?
     }
   }
 
