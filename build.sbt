@@ -10,5 +10,7 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  ws
+  ws,
+  "org.webjars" % "jquery" % "2.1.1",
+  "org.webjars" % "bootstrap" % "3.3.0"
 )
