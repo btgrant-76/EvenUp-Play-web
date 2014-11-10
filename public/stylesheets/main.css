@@ -1,0 +1,51 @@
+.button {
+    /*border-color: darkgray;*/
+    /*border-width: thin;*/
+
+    /*border: solid 1px darkgray;*/
+    /*background: lightgoldenrodyellow;*/
+    vertical-align: middle;
+
+    /*padding-left: 4px; *//* Padding is added to the content before the boarder? */
+    /*padding-right: 4px;*/
+    /*margin-left: 4px;*/
+    /*margin-right: 4px;*/
+    /*margin: 2em;*/
+    /*padding: .25em;*/
+    /*padding: 3px;*/
+    /*width: 5em;*/
+    /*height: 5em;*/
+
+    border: solid 1px #CCCCCC;
+    background-color: #f9f9f9;
+    /*display: table;*/
+    padding: 4px;
+    margin: 4px 4px 0px 4px;
+}
+
+.participant {
+    border: solid 1px #CCCCCC;
+    background-color: #f9f9f9;
+    /*display: table;*/
+    padding: 4px;
+    margin: 4px 4px 0px 4px;
+
+    /*margin: 2pt;*/
+    float: left;
+    clear: right;
+    vertical-align: middle;
+    /*padding: 2px;*/
+}
+
+.part_row {
+    clear: both;
+    vertical-align: middle;
+}
+
+.part_row .button {
+    float: left;
+}
+
+#name_entry {
+    vertical-align: middle;
+}

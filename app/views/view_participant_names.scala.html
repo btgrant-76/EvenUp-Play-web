@@ -12,7 +12,10 @@
 
   @helper.form(action = routes.Participants.addParticipant) {
       <!--@helper.inputText(form("name"))-->
-      <input name="name" autofocus="true"/>
+      <div>
+          <input id="name_entry" name="name" autofocus="true"/>
+          <span class="button" id="add_participant">+</span>
+      </div>
       <br>
       <button type="submit">Add Participant</button>
   }
@@ -21,4 +24,7 @@
       <button type="submit">Enter Expenses</button>
   }
 
+  <div id="participants">
+
+  </div>
 }
