@@ -19,6 +19,12 @@ $(document).ready(function() {
     }
   });
 
+  $('#name_entry').keyup(function(event) {
+    if (event.keyCode == 13) {
+      $('#add_participant').click();
+    }
+  });
+
   $('#participants').on('click', '.remove_participant', function(event) {
     console.log($(this).siblings('span').text());
     names.splice([names.indexOf($(this).siblings('span').text())], 1);
@@ -31,8 +37,9 @@ $(document).ready(function() {
     $('.part_row').remove();
 
     for (var i = 0; i < names.length; i++) {
-      $('#participants').append("<div class='part_row'><span class='participant'>" + names[i] +
-                                "</span><span class='remove_participant button'>-</span></div>");
+      $('#participants').append("<div class='part_row'>"
+                                + "<button class='remove_participant'>-</button>"
+                                + "<span class='participant'>" + names[i] + "</span></div>");
     }
 
   }

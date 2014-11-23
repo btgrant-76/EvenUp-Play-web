@@ -3,7 +3,9 @@
 
 @main("Add Participants") {
 
-  <h2>Participants</h2>
+  <div id="main">
+
+  <h1>Participants</h1>
   <ul>
      @participants.map { p =>
         <li>@p.name</li>
@@ -12,19 +14,21 @@
 
   @helper.form(action = routes.Participants.addParticipant) {
       <!--@helper.inputText(form("name"))-->
-      <div>
-          <input id="name_entry" name="name" autofocus="true"/>
-          <span class="button" id="add_participant">+</span>
-      </div>
+      @*<div>*@
+          @*<input id="was_name_entry" name="name"/>*@
+          @*<span class="button" id="was_add_participant">+</span>*@
+      @*</div>*@
       <br>
-      <button type="submit">Add Participant</button>
+      @*<button type="submit">Add Participant</button>*@
   }
 
-  @helper.form(action = routes.Expenses.index) {
-      <button type="submit">Enter Expenses</button>
-  }
+  <div id="participant_entry">
+      <input type="text" id="name_entry" autofocus="true">
+      @*<span class="spaced"/>*@
+      <button id="add_participant">+</button>
+  </div>
 
-  <div id="participants">
+  <div id="participants"></div>
 
   </div>
 }
