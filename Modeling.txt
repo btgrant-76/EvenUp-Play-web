@@ -1,0 +1,52 @@
+ TODO:  Double's proably shouldn't be used for financial values
+
+ -----------
+|Participant|
+ -----------
+ name: String (unique, non-blank)
+ id: Int (unique, positive) ??? 
+ expenses: Seq[Expense]
+
+ -------
+|Expense|
+ -------
+ amount: Double
+ payee: Participant
+ description: String
+
+ -------
+|Payment|
+ -------
+ amount: Double
+ sender: Participant
+ receiver: Participant
+ description: String ???
+
+/** 
+ * Expenses in this group will be shared among the Participants associated with the Expeses in the Group. 
+ * For example, the total number of Participants in the group is 10. If no Expenses are assigned to a new 
+ * ExpenseGroup, then all Expenses -- any by association all Participants -- belong to the 'Default' 
+ * ExpenseGroup. However, if a special ExpenseGroup is set up -- "Cigars", for example -- then only the 
+ * Participants assocaited with Expenses in the "Cigars" group *as well as* any Participants manually 
+ * added to the "Cigars" ExpenseGroup will share the Expenses therin. 
+ * 
+ * The ExpenseGroup can/should calculate Payments after which the aggregate of all Payments may be 
+ * simplified for Payment distribution.
+ */
+ ------------
+|ExpenseGroup|
+ ------------
+ expenses: Seq[Expense]
+ participants: Seq[Participant]
+
+ def generatePayments: Seq[Payment]
+
+
+Expense <*-1> Participant
+
+ExpenseGroup <*-*> Expense
+             <*-*> Participant
+
+Payment <1-2> Participant (sender/receiver)
+
+
