@@ -3,10 +3,15 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+# TODO:  redirect to GET /participants? 
+GET     /                           controllers.Participants.loadParticipantListPage
+
+POST    /participants               controllers.Participants.addParticipants
+
+# GET /participants for dev only
+GET     /participants               controllers.Participants.addParticipants
 
 GET     /participants/index.html    controllers.Participants.loadParticipantListPage
-POST    /participants               controllers.Participants.addParticipant
 
 GET     /expenses/index.html        controllers.Expenses.index
 POST    /expenses                   controllers.Expenses.addExpense

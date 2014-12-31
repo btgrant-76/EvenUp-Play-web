@@ -5,7 +5,7 @@ import play.api.mvc.{Controller, Action}
 
 object Expenses extends Controller {
 
-  val DEV_PARTICIPANTS = Seq(Participant("Goofus"), Participant("Gallant"))
+  val DEV_PARTICIPANTS = Seq(new Participant("Goofus"), new Participant("Gallant"))
 
   private val AMOUNT_FIELD = "amount"
   private val PARTICIPANT_FIELD = "participant_name"

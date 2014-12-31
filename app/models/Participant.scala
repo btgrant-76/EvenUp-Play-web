@@ -3,7 +3,7 @@ package models
 import play.api.cache.Cache
 import play.api.Play.current
 
-case class Participant(name: String)
+class Participant(val name: String, val expenses: Seq[Expense] = Seq())
 
 object Participant {
   val SESSION_KEY = "session.participants"

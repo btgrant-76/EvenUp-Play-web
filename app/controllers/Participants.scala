@@ -13,10 +13,12 @@ import play.api.mvc.{Action, Controller}
 
 object Participants extends Controller {
 
-  val participantForm: Form[Participant] = Form(
+  case class NewParticipant(name: String)
+
+  val participantForm: Form[NewParticipant] = Form(
     mapping(
       "name" -> nonEmptyText
-    )(Participant.apply)(Participant.unapply)
+    )(NewParticipant.apply)(NewParticipant.unapply)
   )
 
   def loadParticipantListPage = Action { implicit request =>
@@ -24,7 +26,28 @@ object Participants extends Controller {
 
     val participantsFromCache = Participant.getParticipantsFromCache(request.session)
 
-    Ok(views.html.view_participant_names(participantsFromCache, participantForm))
+    Ok(views.html.view_participant_names(participantsFromCache))
+  }
+
+  def addParticipants = Action { implicit request =>
+    
+    if (request.queryString.get("name").isDefined) {
+      handleNames(request.queryString) // dev options only
+    } else {
+      request.body.asFormUrlEncoded
+        .map { handleNames }
+        .orElse { Some(BadRequest("Missing form body")) }
+        .get
+    }
+  }
+
+  private def handleNames(namesMap: Map[String, Seq[String]]) = {
+    if (namesMap.get("name").isEmpty) {
+      BadRequest("No names were submitted")
+    } else {
+      val names = namesMap.get("name")
+      Ok("Participants Added:  " + names.mkString(", "))
+    }
   }
 
   def addParticipant = Action { implicit request =>
@@ -36,7 +59,7 @@ object Participants extends Controller {
       BadRequest(boundForm.errors.mkString("\n"))
     } else {
 
-      val newParticipant: Participant = boundForm.get
+      val newParticipant: Participant = new Participant(boundForm.get.name)
 
       val participantsKey: String = if (request.session.isEmpty) {
         val participantsCacheKey = UUID.randomUUID().toString
@@ -52,7 +75,7 @@ object Participants extends Controller {
         .sortWith {(p1: Participant, p2: Participant) => p1.name < p2.name }
       Cache.set(participantsKey, newParticipants)
 
-      Ok(views.html.view_participant_names(newParticipants, participantForm))
+      Ok(views.html.view_participant_names(newParticipants))
         .withSession(request.session + (Participant.SESSION_KEY, participantsKey)) // TODO redundant?
     }
   }

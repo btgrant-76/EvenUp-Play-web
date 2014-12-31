@@ -39,7 +39,9 @@ $(document).ready(function() {
     for (var i = 0; i < names.length; i++) {
       $('#participants').append("<div class='part_row'>"
                                 + "<button class='remove_participant'>-</button>"
-                                + "<span class='participant'>" + names[i] + "</span></div>");
+                                + "<span class='participant'>" + names[i] + "</span>" 
+                                + "<input type='hidden' name='name' value='" + names[i] + "'/>"
+                                + "</div>");
     }
 
   }
