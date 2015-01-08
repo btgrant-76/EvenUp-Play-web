@@ -3,7 +3,7 @@
 
 @main("Add Participants") {
 
-  <div id="main">
+<div id="main">
 
   <h1>Participants</h1>
   <ul>
@@ -13,6 +13,7 @@
   </ul>
 
   <div id="participant_entry">
+      <label for="name_entry">Name:</label>
       <input type="text" id="name_entry" autofocus="true">
       <button id="add_participant">+</button>
   </div>
@@ -20,6 +21,6 @@
   <form method="post" action="/participants" >
     <div id="participants"></div>
     <button type="submit">Enter Expenses</button>
-    </div>
   </form>
+</div>
 }

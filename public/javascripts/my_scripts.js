@@ -37,10 +37,11 @@ $(document).ready(function() {
     $('.part_row').remove();
 
     for (var i = 0; i < names.length; i++) {
+      var p = names[i];
       $('#participants').append("<div class='part_row'>"
                                 + "<button class='remove_participant'>-</button>"
-                                + "<span class='participant'>" + names[i] + "</span>" 
-                                + "<input type='hidden' name='name' value='" + names[i] + "'/>"
+                                + "<span class='participant'>" + p + "</span>"
+                                + "<input type='hidden' name='name' value='" + p + "'/>"
                                 + "</div>");
     }
 

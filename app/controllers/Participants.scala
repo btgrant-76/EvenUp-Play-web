@@ -30,7 +30,9 @@ object Participants extends Controller {
   }
 
   def addParticipants = Action { implicit request =>
+    Logger.info("called addParticipants")
     
+    // /participants?name=Brian%20Grant&name=Fresh%20Dave&name=Ben%20Beckstrom&name=Linc%20Abbey
     if (request.queryString.get("name").isDefined) {
       handleNames(request.queryString) // dev options only
     } else {
@@ -45,8 +47,11 @@ object Participants extends Controller {
     if (namesMap.get("name").isEmpty) {
       BadRequest("No names were submitted")
     } else {
-      val names = namesMap.get("name")
-      Ok("Participants Added:  " + names.mkString(", "))
+      val names = namesMap.get("name").get
+      // Ok("Participants Added:  " + names.mkString(", "))
+      Ok(views.html.expense_entry(
+        names.map { new Participant(_)},
+        Map()))
     }
   }
 

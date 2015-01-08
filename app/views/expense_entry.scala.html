@@ -3,23 +3,37 @@
 @(participants: Seq[Participant], expenses: Map[Participant, Expense])
 
 @main("Add Expenses") {
-<h2 xmlns="http://www.w3.org/1999/html">Expenses</h2>
+
+<div id="main">
+  <h1 xmlns="http://www.w3.org/1999/html">Expenses</h1>
 
     <ul>
         <!-- Iterate over existing Expenses by Participant -->
     </ul>
 
-    <form method="post" action="/expenses">
+    <div id='expense_entry'>
         <!-- TODO auto-highlight the default value -->
-        <input name="amount" type="number" autofocus="true" value="0.00"
-               step=".01" min="0.00"/>
-        <input name="description"/>
-        <select name="participant_name">
+        <label for="participant">Participant:</label>
+        <select id='participant' name="participant_name">
             @participants.map { p =>
                 <option>@p.name</option>
             }
         </select>
+
         <br>
-        <button type="submit">Add Expense</button>
-    </form>
+
+        <label for="description">Description:</label>
+        <input id="description" name="description" autofocus="true" />
+
+        <br>
+
+        <label for="amount">Amount:</label>
+        <input id="amount" name="amount" type="number" value="0.00"
+               step=".01" min="0.00"/>
+        <button id='add_expense'>+</button>
+    </div>
+    <div id="expenses"></div>
+</div>
+<script src="@routes.Assets.at("javascripts/add_expenses.js")" type="text/javascript"></script>
+
 }
