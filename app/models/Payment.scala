@@ -1,5 +1,3 @@
 package models
 
-class Payment(amount: BigDecimal, from: Participant, to: Participant) {
-
-}
+case class Payment(from: Participant, amount: BigDecimal,  to: Participant)

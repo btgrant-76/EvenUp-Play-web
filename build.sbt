@@ -7,10 +7,9 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.11.1"
 
 libraryDependencies ++= Seq(
-  jdbc,
-  anorm,
   cache,
-  ws,
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test",
   "org.webjars" % "jquery" % "2.1.1",
   "org.webjars" % "bootstrap" % "3.3.0"
 )

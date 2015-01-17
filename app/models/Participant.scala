@@ -7,6 +7,9 @@ import play.api.Play.current
 class Participant(val name: String, val expenses: Seq[Expense] = Seq()) {
   assume(StringUtils.isNotBlank(name))
 
+  lazy val hashCodeValue = Seq(name).map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  lazy val toStringValue = s"${this.getClass.getName}{name : $name}"
+
   def canEqual(other: Any): Boolean = other.isInstanceOf[Participant]
 
   override def equals(other: Any): Boolean = other match {
@@ -16,10 +19,10 @@ class Participant(val name: String, val expenses: Seq[Expense] = Seq()) {
     case _ => false
   }
 
-  override def hashCode(): Int = {
-    val state = Seq(name)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-  }
+  override def hashCode(): Int = hashCodeValue
+
+  override def toString: String = toStringValue
+
 }
 
 object Participant {
@@ -32,4 +35,6 @@ object Participant {
       Cache.getOrElse(value)(emptySeq)
     }.getOrElse(emptySeq)
   }
+
+
 }

@@ -1,5 +1,5 @@
 package models
 
-class Expense(amount: BigDecimal, spender: Participant, description: String) {
-
+class Expense(val amount: BigDecimal, val description: String) {
+  require(amount > 0 && !description.isEmpty)
 }

@@ -1,5 +1,4 @@
- TODO:  Double's proably shouldn't be used for financial values
-
+TODO make this a markdown file. That would be more fun for sure.
  -----------
 |Participant|
  -----------
@@ -10,14 +9,14 @@
  -------
 |Expense|
  -------
- amount: Double
+ amount: BigDecimal
  payee: Participant
  description: String
 
  -------
 |Payment|
  -------
- amount: Double
+ amount: BigDecimal
  sender: Participant
  receiver: Participant
  description: String ???
@@ -27,8 +26,8 @@
  * For example, the total number of Participants in the group is 10. If no Expenses are assigned to a new 
  * ExpenseGroup, then all Expenses -- any by association all Participants -- belong to the 'Default' 
  * ExpenseGroup. However, if a special ExpenseGroup is set up -- "Cigars", for example -- then only the 
- * Participants assocaited with Expenses in the "Cigars" group *as well as* any Participants manually 
- * added to the "Cigars" ExpenseGroup will share the Expenses therin. 
+ * Participants associated with Expenses in the "Cigars" group *as well as* any Participants manually
+ * added to the "Cigars" ExpenseGroup will share the Expenses therein.
  * 
  * The ExpenseGroup can/should calculate Payments after which the aggregate of all Payments may be 
  * simplified for Payment distribution.
@@ -36,7 +35,6 @@
  ------------
 |ExpenseGroup|
  ------------
- expenses: Seq[Expense]
  participants: Seq[Participant]
 
  def generatePayments: Seq[Payment]
