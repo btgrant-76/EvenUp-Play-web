@@ -6,22 +6,23 @@ $(document).ready(function() {
     names : []
   };
 
-  $('#add_expense').bind('click', function() {
-    // TODO validate the numeric input
-    var amount = parseFloat($('#amount').val());
+  resetExpenseEntryFields();
 
-    if (isNaN(amount)) {
-      alert('Amount "' + $('#amount').val() + '" is not numeric.');
-    } else {
+  $('#add_expense').bind('click', function() {
+    var amount = parseFloat($('#amount').val());
+    var description = $('#description').val();
+
+    if (inputsAreValid(amount, description)) {
       var participant_name = $('#participant').val();
       console.log('adding expense for ' + participant_name);
-
       var participant = getParticipant(participant_name);
-      var description = $('#description').val();
 
       var expense = {
         'description' : description, 
-        'amount' : amount 
+        'amount' : amount,
+        display : function() {
+          return "$" + amount.toFixed(2) + " for " + description;
+        }
       };
 
       participant['expenses'].push(expense);
@@ -34,10 +35,38 @@ $(document).ready(function() {
     }
   });
 
-  resetExpenseEntryFields();
+  function inputsAreValid(amount, description) {
+    // FIXME when the dialog appears, hitting enter re-triggers the alert.
+    var areInputsValid = true;
+    var message = ''
+    if (description == '') {
+      message = 'Please add a description.';
+      $('#description').focus();
+      areInputsValid = false;
+    }
+
+    if (isNaN(amount) || amount == 0) {
+      zeroOutAmountField();
+      if (message != '') {
+        message += '\n';
+      }
+      message += 'Amount must be a number greater than 0.';
+      areInputsValid = false;
+    }
+
+    if (message.length > 0) {
+      alert(message);
+    }
+
+    return areInputsValid;
+  }
+
+  function zeroOutAmountField() {
+    $('#amount').val(0);
+  }
 
   function resetExpenseEntryFields() {
-    $('#amount').val(0);
+    zeroOutAmountField();
     var descriptionField = $('#description');
     descriptionField.val('');
     descriptionField.focus();
@@ -45,21 +74,34 @@ $(document).ready(function() {
 
   function updateExpenses() {
     console.log('updating expenses...');
-    $('.expense_row').remove();
+    $('.part_row').remove();
 
     var participantsElem = $('#expenses');
-    // FIXME participants is an object, not an array...
     for (var i = 0; i < participants.names.length; i++) {
       var p = participants[participants.names[i]];
       console.log(JSON.stringify(p));
-      participantsElem.append("<div class='expense_row'>"
-                              + "<button class='remove_expense'>-</button>"
-                              + "<span class='expense'>" + p['name'] + "</span>"
+      participantsElem.append("<div class='part_row'>"
+                              + "<span class='participant'>" + p['name'] + "</span>"
+                              + htmlForExpenses(p['expenses'])
                               + "</div>"
       );
     }
     console.log('expenses updated');
+  }
 
+  function htmlForExpenses(expenseArray) {
+    var stringBuilder = "";
+
+    for (var i = 0; i < expenseArray.length; i++) {
+      var expense = expenseArray[i];
+
+      stringBuilder += "<div class='expense_row'>"
+                       + "<button class='remove_expense'>-</button>"
+                       + "<span class='expense'>" + expense.display() + "</span>"
+                       + "</div>";
+    }
+
+    return stringBuilder;
   }
 
   function addExpenseOnKeyPress(event) {

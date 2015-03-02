@@ -23,13 +23,13 @@
         <br>
 
         <label for="description">Description:</label>
-        <input id="description" name="description" autofocus="true" />
+        <input id="description" name="description" autofocus="true" required="true"/>
 
         <br>
 
         <label for="amount">Amount:</label>
         <input id="amount" name="amount" type="number" value="0.00"
-               step=".01" min="0.00"/>
+               step=".01" min="0.00" required="true"/>
         <button id='add_expense'>+</button>
     </div>
     <div id="expenses"></div>
