@@ -4,17 +4,21 @@
 
 # Home page
 # TODO:  redirect to GET /participants? 
-GET     /                           controllers.Participants.loadParticipantListPage
+GET         /                               controllers.Participants.loadParticipantListPage
 
-POST    /participants               controllers.Participants.addParticipants
+POST        /participants                   controllers.Participants.addParticipants
 
 # GET /participants for dev only
-GET     /participants               controllers.Participants.addParticipants
+GET         /participants                   controllers.Participants.addParticipants
 
-GET     /participants/index.html    controllers.Participants.loadParticipantListPage
+GET         /participants/index.html        controllers.Participants.loadParticipantListPage
 
-GET     /expenses/index.html        controllers.Expenses.index
-POST    /expenses                   controllers.Expenses.addExpense
+GET         /expenses/index.html            controllers.Expenses.index
+POST        /expenses                       controllers.Expenses.addExpense
+
+
+POST        /calculations                   controllers.Expenses.calculateExpenses
+GET         /calculations/:id               controllers.Expenses.displayCalculations(id)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET         /assets/*file                   controllers.Assets.at(path="/public", file)

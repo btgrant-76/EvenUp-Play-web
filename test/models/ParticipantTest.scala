@@ -1,29 +1,36 @@
 package models
 
 import org.scalatest.FunSuite
+import play.api.libs.json._
 
 class ParticipantTest extends FunSuite {
 
-  test("Equality") {
-    assert(new Participant("same").equals(new Participant("same")))
+  val participantWithNoExpenses = """{"name" : "Mark Maker", "expenses" : []}"""
+  val participantWithExpenses = """{"name" : "Mark Maker", "expenses" : [{"name" : "Maker's Mark", "amount" : 22.44}, {"name" : "Two Brothers Variety Pack", "amount" : 25.92}]}"""
+
+  test("JSON is parsed to a Participant without expenses") {
+    val participant: Participant = Json.parse(participantWithNoExpenses).as[Participant]
+
+    assert(participant.name === "Mark Maker")
+    assert(participant.expenses === Seq())
   }
 
-  test("Inequality") {
-    assert(!new Participant("different").equals(new Participant("also different")))
-  }
+  test("JSON is parsed to a Participant with Expenses") {
+    val participant: Participant = Json.parse(participantWithExpenses).as[Participant]
+    assert(participant.name === "Mark Maker")
 
-  test("HashCode Equality") {
-    assert(new Participant("same").hashCode() === new Participant("same").hashCode())
-  }
-
-  test("HashCode Inequality") {
-    assert(new Participant("different").hashCode() != new Participant("also different").hashCode())
-  }
-
-  test("toString is based on the fully-qualified class and name") {
-    val participantString = new Participant("I am an individual").toString()
-    assert(participantString.contains("I am an individual") &&
-           participantString.startsWith("models.Participant{name :"))
+    participant.expenses.foldLeft(0) {(index: Int, exp: Expense) =>
+      index match {
+        case 0 =>
+          assert(exp.name === "Maker's Mark")
+          assert(exp.amount === BigDecimal("22.44"))
+        case 1 =>
+          assert(exp.name === "Two Brothers Variety Pack")
+          assert(exp.amount === BigDecimal("25.92"))
+        case _ => throw new AssertionError()
+      }
+      index + 1
+    }
   }
 
 }

@@ -1,7 +1,9 @@
 package controllers
 
+import java.util.UUID
+
 import models.Participant
-import play.api.mvc.{Controller, Action}
+import play.api.mvc.{Action, Controller}
 
 object Expenses extends Controller {
 
@@ -14,7 +16,7 @@ object Expenses extends Controller {
     val participants =  DEV_PARTICIPANTS // Participant.getParticipantsFromCache(request.session)
 
     if (participants.isEmpty) {
-      Redirect(routes.Participants.loadParticipantListPage)
+      Redirect(routes.Participants.loadParticipantListPage())
     } else {
       Ok(views.html.expense_entry(participants, Map()))
     }
@@ -38,4 +40,13 @@ object Expenses extends Controller {
     }
   }
 
+  def calculateExpenses = Action(parse.json) { request =>
+    val stuff = request.body.as[Seq[Participant]]
+    Ok("/calculations/" + UUID.randomUUID().toString)
+  }
+
+  def displayCalculations(resourceId: String) = Action(parse.json) { request =>
+    Ok(resourceId + ": you did it!!!")
+  }
+  
 }

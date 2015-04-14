@@ -1,10 +1,13 @@
 package models
 
 import org.apache.commons.lang3.StringUtils
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import play.api.libs.functional.syntax._
 import play.api.cache.Cache
 import play.api.Play.current
 
-class Participant(val name: String, val expenses: Seq[Expense] = Seq()) {
+case class Participant(name: String, expenses: Seq[Expense] = Seq()) {
   assume(StringUtils.isNotBlank(name))
 
   lazy val hashCodeValue = Seq(name).map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
@@ -36,5 +39,9 @@ object Participant {
     }.getOrElse(emptySeq)
   }
 
+  implicit val participantRead: Reads[Participant] = (
+    (JsPath \ "name").read[String] and
+    (JsPath \ "expenses").read[Seq[Expense]]
+  )(Participant.apply _)
 
 }
