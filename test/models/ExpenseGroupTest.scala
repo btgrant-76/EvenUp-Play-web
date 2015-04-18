@@ -12,8 +12,13 @@ class ExpenseGroupTest extends FunSuite with MockFactory {
     val expenseGroup = new ExpenseGroup(Seq(participant1, participant2))
 
     val payments = expenseGroup.generatePayments
+    val generatedPayment = new Payment(participant2, 7.00, participant1)
     assert(payments.size === 1)
-    assert(payments.head === new Payment(participant2, 7.00, participant1))
+    assert(payments.head === generatedPayment)
+
+    val newPayments: Seq[Payment] = expenseGroup.calculatePayments
+    assert(newPayments.size === 1)
+    assert(newPayments.head === generatedPayment)
   }
 
   test("Two expenses split between two people") {
@@ -24,8 +29,13 @@ class ExpenseGroupTest extends FunSuite with MockFactory {
     val expenseGroup = new ExpenseGroup(Seq(participant1, participant2))
 
     val payments = expenseGroup.generatePayments
+    val generatedPayment = new Payment(participant2, 20.00, participant1)
     assert(payments.size === 1)
-    assert(payments.head === new Payment(participant2, 20.00, participant1))
+    assert(payments.head === generatedPayment)
+
+    val newPayments: Seq[Payment] = expenseGroup.calculatePayments
+    assert(newPayments.size === 1)
+    assert(newPayments.head === generatedPayment)
   }
 
   test ("When spending is equal, no payments should be generated") {
@@ -35,8 +45,11 @@ class ExpenseGroupTest extends FunSuite with MockFactory {
     ))
 
     assert(expenseGroup.generatePayments.isEmpty)
+
+    assert(expenseGroup.calculatePayments.isEmpty)
   }
 
+  // TODO left off up here
   test("Unbalanced payments between two Participants should be reconciled") {
     val participant1 = new Participant("one", Seq(new Expense(5.10, "participant one expense")))
     val participant2 = new Participant("two", Seq(new Expense(10.00, "participant two expense")))
@@ -65,5 +78,13 @@ class ExpenseGroupTest extends FunSuite with MockFactory {
     val payments = ExpenseGroup.generatePayments(expenseGroupOne, expenseGroupTwo)
     assert(payments.isEmpty)
   }
+
+  test("total expenses") {
+    val bd = ExpenseGroup.totalExpenses(Seq(Expense(10, "exp"), Expense(10, "exp"), Expense(2, "exp"), Expense(3, "exp")))
+//    println(bd)
+    assert(BigDecimal(25) === bd)
+  }
+
+
 
 }
