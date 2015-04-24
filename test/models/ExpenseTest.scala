@@ -25,25 +25,25 @@ class ExpenseTest extends FunSuite {
   }
 
   test("JSON is parsed to Expense instances") {
-    val singleExpense = Json.parse("""{"name" : "Maker's Mark", "amount" : 22.44}""")
+    val singleExpense = Json.parse("""{"description" : "Maker's Mark", "amount" : 22.44}""")
     val exp: Expense = singleExpense.as[Expense] // implicit (jsonReads)
 
-    assert(exp.name === "Maker's Mark")
+    assert(exp.description === "Maker's Mark")
     assert(exp.amount === BigDecimal("22.44"))
   }
 
   test("JSON array is parsed as Seq[Expense]") {
     val expenseArray = Json.parse(
-      """[{"name" : "Maker's Mark", "amount" : 22.44}, {"name" : "Two Brothers Variety Pack", "amount" : 25.92}]""")
+      """[{"description" : "Maker's Mark", "amount" : 22.44}, {"description" : "Two Brothers Variety Pack", "amount" : 25.92}]""")
     val expenses: Seq[Expense] = expenseArray.as[Seq[Expense]]
 
     expenses.foldLeft(0) {(index: Int, exp: Expense) =>
       index match {
         case 0 =>
-          assert(exp.name === "Maker's Mark")
+          assert(exp.description === "Maker's Mark")
           assert(exp.amount === BigDecimal("22.44"))
         case 1 =>
-          assert(exp.name === "Two Brothers Variety Pack")
+          assert(exp.description === "Two Brothers Variety Pack")
           assert(exp.amount === BigDecimal("25.92"))
         case _ => throw new AssertionError()
       }

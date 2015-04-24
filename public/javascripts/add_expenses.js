@@ -4,6 +4,7 @@ $(document).ready(function() {
 
   var participants = {
     names : [],
+
     getParticipants: function(name) {
           var participant = participants[name];
 
@@ -33,15 +34,16 @@ $(document).ready(function() {
     if (inputsAreValid(amount, description)) {
       var participant_name = $('#participant').val();
       console.log('adding expense for ' + participant_name);
-      //var participant = getParticipant(participant_name);
       var participant = participants.getParticipants(participant_name);
 
       var expense = {
-        'description' : description, 
+        'description' : description,
         'amount' : amount,
+
         display : function() {
           return "$" + amount.toFixed(2) + " for " + description;
         },
+
         matches : function(description, amount) {
           console.log('matching on ' + description + ' and ' + amount);
           console.log('my values are ' + this.description + ' and ' + this.amount);
@@ -50,11 +52,8 @@ $(document).ready(function() {
       };
 
       participant['expenses'].push(expense);
-
       console.log(JSON.stringify(participant));
-
       updateExpenses();
-
       resetExpenseEntryFields();
     }
   });
@@ -65,7 +64,6 @@ $(document).ready(function() {
     var theExpense = $(this).siblings('.expense');
     var theAmount = theExpense.attr('exp_amount');
     var theDescription = theExpense.attr('exp_description');
-
     var participantExpenses = participants.getParticipants(theExpense.attr('part_name')).expenses;
 
     var removalIndex = -1;
@@ -169,5 +167,30 @@ $(document).ready(function() {
   $('#amount').keyup(addExpenseOnKeyPress);
   $('#description').keyup(addExpenseOnKeyPress);
   $('#participant').keyup(addExpenseOnKeyPress);
+  $('#submit_expenses').bind('click', function() {
+    var expenses = [];
+
+    for (var i = 0; i < participants.names.length; i++) {
+      var p = participants[participants.names[i]];
+
+      if (p === undefined) {
+        // ignore it
+      } else {
+        expenses.push(p);
+      }
+    }
+
+    console.log(JSON.stringify(expenses));
+
+    $.ajax({
+      url:  '/calculations',
+      data: JSON.stringify(expenses),
+      contentType: 'application/json',
+      type: 'POST',
+      success: function(noBody, textStatus, jqXHR) {
+        window.location = jqXHR.getResponseHeader('Location')
+      }
+    });
+  });
 
 });

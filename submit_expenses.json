@@ -1,27 +1,27 @@
 [
   { "name" : "Brian",
     "expenses" : [
-      {"name" : "Maker's Mark",
+      {"description" : "Maker's Mark",
        "amount" : 22.44},
-      {"name" : "Two Brothers variety pack",
+      {"description" : "Two Brothers variety pack",
        "amount" : 25.19}
     ]
   },
 
   { "name" : "Fresh Dave",
     "expenses" : [
-      {"name" : "Apples",
+      {"description" : "Apples",
        "amount" : 8.99},
-      {"name" : "Double Dirty Bastard",
+      {"description" : "Double Dirty Bastard",
        "amount" : 75.00}
     ]
   },
 
   {"name" : "Ben",
     "expenses" : [
-      {"name" : "Frozen pizzas",
+      {"description" : "Frozen pizzas",
        "amount" : 38.12},
-      {"name" : "Rabbits",
+      {"description" : "Rabbits",
        "amount" : 14.22}
     ]
   }
