@@ -34,50 +34,73 @@ case class ExpenseGroup(participants: Seq[Participant]) {
     }
 
     val debtByDebtors: Map[Participant, BigDecimal] = spendingLessCost.filter(byNegativeAmounts)
+      .map {entry: (Participant, BigDecimal) => (entry._1, entry._2 * -1)
+    }
+
 //    val debtByDebtOwners: Map[Participant, BigDecimal] = spendingLessCost.filterNot {entry: (Participant, BigDecimal) => debtByDebtors.keySet.contains(entry._1)}
     val debtByDebtOwners: Map[Participant, BigDecimal] = spendingLessCost.filterNot(byNegativeAmounts)
 
-    println("debt by debtors:  " + debtByDebtors.mkString(", "))
-    println("debt by debt owners:  " + debtByDebtOwners.mkString(", "))
+//    println("debt by debtors:  " + debtByDebtors.mkString(", "))
+//    println("debt by debt owners:  " + debtByDebtOwners.mkString(", "))
 
     // TODO try recursively stepping through both maps and making accumulating payments as we go along.
 
-    matchDebtorsToDebtOwners(debtByDebtors, debtByDebtOwners)
+    ExpenseGroup.matchDebtorsToDebtOwners(debtByDebtors, debtByDebtOwners)
   }
 
   // TODO return a Set instead of a Seq
-  private def matchDebtorsToDebtOwners(debtors: Map[Participant, BigDecimal], debtOwners: Map[Participant, BigDecimal]) = {
+  // TODO recursively find matching
+  // TODO recursively find the rest
+  // TODO eliminate 0 values since they are neither owed nor do they owe?
+  private def byNegativeAmounts(participantAndAmount: (Participant, BigDecimal)) = participantAndAmount._2 < 0
+}
+
+object ExpenseGroup {
+
+  val ZERO = BigDecimal(0)
+
+  def matchDebtorsToDebtOwners(debtors: Map[Participant, BigDecimal], debtOwners: Map[Participant, BigDecimal]): Seq[Payment] = {
 
     def accumulatePayments(payments: Seq[Payment], debtors: Map[Participant, BigDecimal], debtOwners: Map[Participant, BigDecimal]): Seq[Payment] = {
+
+      println(s"accumulating payments from payment ${payments.mkString(",")}\n\tdebtors ${debtors.mkString(",")}\n\tdebt owners ${debtOwners.mkString(",")}\n\n")
 
       if (debtors.isEmpty && debtOwners.isEmpty) {
         println("returning payments:  " + payments.mkString(", "))
         payments
       } else {
+//        println("else")
         debtors.flatMap { debt: (Participant, BigDecimal) =>
+//          println("flat mapping debtors")
           debtOwners.flatMap { ownedDebt: (Participant, BigDecimal) =>
-            if (debt._2.equals(ownedDebt._2 * -1)) {
-              println(debt + ", " + ownedDebt)
+//            println("flat mapping debt owners")
+            if (debt._2.equals(ownedDebt._2)) {
+              //              println("found to be equal:  " + debt + ", " + ownedDebt)
               accumulatePayments(payments :+ Payment(debt._1, ownedDebt._2, ownedDebt._1), debtors - debt._1, debtOwners - ownedDebt._1)
-            } else {
-              payments
+//              payments ++ matchDebtorsToDebtOwners(debtors - debt._1, debtOwners - ownedDebt._1) :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
+            } else if (debt._2 > ownedDebt._2) {
+              val payment = Payment(debt._1, debt._2 - ownedDebt._2, ownedDebt._1)
+              val oneLessDebtOwner = debtOwners - ownedDebt._1
+              val debtorsWithLessDebt = debtors - debt._1 + (debt._1 -> (debt._2 - ownedDebt._2))
+
+              accumulatePayments(payments :+ payment, debtorsWithLessDebt, oneLessDebtOwner)
+//              payments ++ matchDebtorsToDebtOwners(debtorsWithLessDebt, oneLessDebtOwner) :+ payment
+            } else { // debt._2 is < ownedDebt._2
+              val payment = Payment(debt._1, debt._2 , ownedDebt._1)
+              assert(payment.amount >= 0)
+              val oneLessDebtor = debtors - debt._1
+              val debtOwnersWithLessDebt = debtOwners - ownedDebt._1 + (ownedDebt._1 -> (ownedDebt._2 - payment.amount))
+
+              accumulatePayments(payments :+ payment, oneLessDebtor, debtOwnersWithLessDebt)
+//              payments ++ matchDebtorsToDebtOwners(oneLessDebtor, debtOwnersWithLessDebt) :+ payment
             }
           }
         }.toSeq
       }
     }
 
-    accumulatePayments(Seq(), debtors, debtOwners)
+    accumulatePayments(Seq(), debtors, debtOwners).toSet.toSeq
   }
-
-  // TODO eliminate 0 values since they are neither owed nor do they owe?
-  private def byNegativeAmounts(participantAndAmount: (Participant, BigDecimal)) = participantAndAmount._2 < 0
-
-}
-
-object ExpenseGroup {
-
-  val ZERO = BigDecimal(0)
 
   private def reconcilePayments(payments: Traversable[Payment]): Seq[Payment] = {
     payments.foldLeft(Set[Payment]()) {(reconciled, curPayment) =>
