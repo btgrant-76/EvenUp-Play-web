@@ -81,13 +81,16 @@ class ExpenseGroupTest extends FunSuite with Matchers {
     payments should contain allOf (Payment(ben, 8.98, freshDave), Payment(brian, 13.69, freshDave))
   }
 
-  ignore("Matching debtors to debt owners with second sample") {
+  test("Matching debtors to debt owners with second sample") {
     val debtors = Map[Participant, BigDecimal](smokey -> 42.255)
     val debtOwners = Map[Participant, BigDecimal](brian -> 0.395, freshDave -> 36.755, ben -> 5.105)
 
     val payments =  ExpenseGroup.matchDebtorsToDebtOwners(debtors, debtOwners)
 
-    assert(payments.size === 3, payments.mkString(", "))
+    val paymentsString = payments.mkString(", ")
+    println("payments for 2nd sample:  " + paymentsString)
+
+    assert(payments.size === 3, paymentsString)
   }
 
   test("Payments are reconciled across multiple ExpenseGroups") {

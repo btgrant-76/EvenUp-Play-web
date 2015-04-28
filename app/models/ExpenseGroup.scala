@@ -61,6 +61,56 @@ object ExpenseGroup {
 
   def matchDebtorsToDebtOwners(debtors: Map[Participant, BigDecimal], debtOwners: Map[Participant, BigDecimal]): Seq[Payment] = {
 
+    def accPay(payments: Seq[Payment], debtors: Map[Participant, BigDecimal], debtOwners: Map[Participant, BigDecimal]): Seq[Payment] = {
+
+//      if (debtors.isEmpty && debtOwners.isEmpty) {
+      if (debtors.isEmpty || debtOwners.isEmpty) {
+//      if (debtors.isEmpty) { // } || debtOwners.isEmpty) {
+//        assert(debtOwners.isEmpty, s"debt owners remain:  ${debtOwners.mkString(",")}")
+        if (!debtOwners.isEmpty) {
+          println(s"debt owners remain:  ${debtOwners.mkString(",")}")
+        }
+
+        payments
+      } else {
+        var debt: (Participant, BigDecimal) = debtors.head
+        var debtOwnersToUpdate = Map[Participant, BigDecimal]()
+        var addPaymentsHere = payments
+
+        for (ownedDebt: (Participant, BigDecimal) <- debtOwners) {
+          if (debt._2.equals(ownedDebt._2)) {
+//            println("found to be equal:  " + debt + ", " + ownedDebt)
+
+            addPaymentsHere = addPaymentsHere :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
+            debt = (debt._1, 0)
+            debtOwnersToUpdate = debtOwners - ownedDebt._1
+          } else if (debt._2 > ownedDebt._2) {
+            addPaymentsHere = addPaymentsHere :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
+            debt = (debt._1, debt._2 - ownedDebt._2)
+            debtOwnersToUpdate = debtOwners - ownedDebt._1 // they're paid off
+          } else { // debt._2 < ownedDebt._2
+            val payment = Payment(debt._1, debt._2, ownedDebt._1)
+            addPaymentsHere = addPaymentsHere :+ payment
+            debt = (debt._1, 0) // the debtor has paid their debt
+
+            val remainderOfOwnedDebt = ownedDebt._2 - debt._2
+            assert(remainderOfOwnedDebt > 0)
+            debtOwnersToUpdate = (debtOwners - ownedDebt._1) + (ownedDebt._1 -> remainderOfOwnedDebt)
+          }
+        }
+
+        val debtsPostPayments = if (debt._2 == 0) {
+          debtors - debt._1 // a debtor no more!
+        } else {
+          debtors - debt._1 + (debt._1 -> debt._2)
+        }
+
+        accPay(addPaymentsHere, debtsPostPayments, debtOwnersToUpdate)
+      }
+    }
+
+    // TODO this may be too complicated. a simple recursive operation like countChange might be adequate
+    // https://bitbucket.org/btgrant/coursera-functional-programming-principles-in-scala/src/019d15eba3706e326a05ba0d81502baab8c11fdd/recfun/src/main/scala/recfun/Main.scala?at=master
     def accumulatePayments(payments: Seq[Payment], debtors: Map[Participant, BigDecimal], debtOwners: Map[Participant, BigDecimal]): Seq[Payment] = {
 
       println(s"accumulating payments from payment ${payments.mkString(",")}\n\tdebtors ${debtors.mkString(",")}\n\tdebt owners ${debtOwners.mkString(",")}\n\n")
@@ -69,37 +119,82 @@ object ExpenseGroup {
         println("returning payments:  " + payments.mkString(", "))
         payments
       } else {
-//        println("else")
-        debtors.flatMap { debt: (Participant, BigDecimal) =>
-//          println("flat mapping debtors")
-          debtOwners.flatMap { ownedDebt: (Participant, BigDecimal) =>
-//            println("flat mapping debt owners")
-            if (debt._2.equals(ownedDebt._2)) {
-              //              println("found to be equal:  " + debt + ", " + ownedDebt)
-              accumulatePayments(payments :+ Payment(debt._1, ownedDebt._2, ownedDebt._1), debtors - debt._1, debtOwners - ownedDebt._1)
-//              payments ++ matchDebtorsToDebtOwners(debtors - debt._1, debtOwners - ownedDebt._1) :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
-            } else if (debt._2 > ownedDebt._2) {
-              val payment = Payment(debt._1, debt._2 - ownedDebt._2, ownedDebt._1)
-              val oneLessDebtOwner = debtOwners - ownedDebt._1
-              val debtorsWithLessDebt = debtors - debt._1 + (debt._1 -> (debt._2 - ownedDebt._2))
+//        debtors.foldLeft((payments, debtOwners)) {(stuffs) =>
+//
+//          null
+//
+//        }
 
-              accumulatePayments(payments :+ payment, debtorsWithLessDebt, oneLessDebtOwner)
-//              payments ++ matchDebtorsToDebtOwners(debtorsWithLessDebt, oneLessDebtOwner) :+ payment
+
+        // TODO do these need to be mutable collections at all? var seems sufficient
+        var addPaymentsHere = collection.mutable.Seq[Payment]()
+        var mutableDebtors = collection.mutable.Map() ++ debtors
+        var mutableDebtOwners = collection.mutable.Map() ++ debtOwners
+
+        // TODO try iterating over the collections passed in but build up modified versions of the collections as we go along?
+        for (debt: (Participant, BigDecimal) <- mutableDebtors) {
+          for (ownedDebt: (Participant, BigDecimal) <- mutableDebtOwners) {
+            if (debt._2.equals(ownedDebt._2)) {
+              println("found to be equal:  " + debt + ", " + ownedDebt)
+
+              addPaymentsHere = addPaymentsHere :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
+              mutableDebtors = mutableDebtors - debt._1
+              mutableDebtOwners = mutableDebtOwners - ownedDebt._1
+            } else if (debt._2 > ownedDebt._2) {
+              addPaymentsHere = addPaymentsHere :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
+              mutableDebtors = mutableDebtors - debt._1 + (debt._1 -> (debt._2 - ownedDebt._2))
+              mutableDebtOwners = mutableDebtOwners - ownedDebt._1
             } else { // debt._2 is < ownedDebt._2
               val payment = Payment(debt._1, debt._2 , ownedDebt._1)
               assert(payment.amount >= 0)
-              val oneLessDebtor = debtors - debt._1
-              val debtOwnersWithLessDebt = debtOwners - ownedDebt._1 + (ownedDebt._1 -> (ownedDebt._2 - payment.amount))
 
-              accumulatePayments(payments :+ payment, oneLessDebtor, debtOwnersWithLessDebt)
-//              payments ++ matchDebtorsToDebtOwners(oneLessDebtor, debtOwnersWithLessDebt) :+ payment
+              addPaymentsHere = addPaymentsHere :+ payment
+              mutableDebtors = mutableDebtors - debt._1
+              mutableDebtOwners = mutableDebtOwners - ownedDebt._1 + (ownedDebt._1 -> (ownedDebt._2 - payment.amount))
             }
           }
-        }.toSeq
+        }
+
+        if (mutableDebtors.isEmpty && mutableDebtOwners.isEmpty) {
+          addPaymentsHere
+        } else {
+          accumulatePayments(addPaymentsHere, mutableDebtors.toMap, mutableDebtOwners.toMap)
+        }
+
+
+
+//        println("else")
+//        debtors.flatMap { debt: (Participant, BigDecimal) =>
+////          println("flat mapping debtors")
+//          debtOwners.flatMap { ownedDebt: (Participant, BigDecimal) =>
+////            println("flat mapping debt owners")
+//            if (debt._2.equals(ownedDebt._2)) {
+//              //              println("found to be equal:  " + debt + ", " + ownedDebt)
+//              accumulatePayments(payments :+ Payment(debt._1, ownedDebt._2, ownedDebt._1), debtors - debt._1, debtOwners - ownedDebt._1)
+////              payments ++ matchDebtorsToDebtOwners(debtors - debt._1, debtOwners - ownedDebt._1) :+ Payment(debt._1, ownedDebt._2, ownedDebt._1)
+//            } else if (debt._2 > ownedDebt._2) {
+//              val payment = Payment(debt._1, debt._2 - ownedDebt._2, ownedDebt._1)
+//              val oneLessDebtOwner = debtOwners - ownedDebt._1
+//              val debtorsWithLessDebt = debtors - debt._1 + (debt._1 -> (debt._2 - ownedDebt._2))
+//
+//              accumulatePayments(payments :+ payment, debtorsWithLessDebt, oneLessDebtOwner)
+////              payments ++ matchDebtorsToDebtOwners(debtorsWithLessDebt, oneLessDebtOwner) :+ payment
+//            } else { // debt._2 is < ownedDebt._2
+//              val payment = Payment(debt._1, debt._2 , ownedDebt._1)
+//              assert(payment.amount >= 0)
+//              val oneLessDebtor = debtors - debt._1
+//              val debtOwnersWithLessDebt = debtOwners - ownedDebt._1 + (ownedDebt._1 -> (ownedDebt._2 - payment.amount))
+//
+//              accumulatePayments(payments :+ payment, oneLessDebtor, debtOwnersWithLessDebt)
+////              payments ++ matchDebtorsToDebtOwners(oneLessDebtor, debtOwnersWithLessDebt) :+ payment
+//            }
+//          }
+//        }.toSeq
       }
     }
 
-    accumulatePayments(Seq(), debtors, debtOwners).toSet.toSeq
+//    accumulatePayments(Seq(), debtors, debtOwners)/*.toSet.*/toSeq
+    accPay(Seq(), debtors, debtOwners)/*.toSet.*/toSeq
   }
 
   private def reconcilePayments(payments: Traversable[Payment]): Seq[Payment] = {
