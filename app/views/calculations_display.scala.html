@@ -11,7 +11,7 @@
     <div id="participants">
         @participants.map { participant =>
             <div class="part_row">
-                <div class="participant">@participant.name spent $@participant.expenses.map(expense => expense.amount).reduce((p1: BigDecimal, p2: BigDecimal) => p1 + p2)</div>
+                <div class="participant">@participant.name spent $@participant.expenses.map(expense => expense.amount).sum</div>
                 <ul>
                     @participant.expenses.map { expense =>
                       <li>$@expense.amount for @expense.description</li>

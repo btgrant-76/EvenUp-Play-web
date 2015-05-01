@@ -1,0 +1,60 @@
+[
+  {
+    "name": "Ben Beckstrom",
+    "expenses": [
+      {
+        "description": "Rabbits",
+        "amount": 50
+      }
+    ]
+  },
+  {
+    "name": "Brian Grant",
+    "expenses": [
+      {
+        "description": "Cigars",
+        "amount": 75
+      }
+    ]
+  },
+  {
+    "name": "Fresh Dave",
+    "expenses": [
+      {
+        "description": "Apples",
+        "amount": 131.87
+      }
+    ]
+  },
+  {
+    "name": "Linc Abbey",
+    "expenses": [
+      {
+        "description": "Mad Beats",
+        "amount": 83.78
+      }
+    ]
+  },
+  {
+    "name": "Pete Chisman",
+    "expenses": [
+      {
+        "description": "Firewood",
+        "amount": 80
+      }
+    ]
+  },
+  {
+    "name": "Sten Anderson",
+    "expenses": [
+      {
+        "description": "Guitar",
+        "amount": 68.75
+      }
+    ]
+  },
+  {
+    "name": "Smoky",
+    "expenses": []
+  }
+]

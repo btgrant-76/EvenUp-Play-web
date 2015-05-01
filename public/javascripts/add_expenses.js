@@ -169,12 +169,15 @@ $(document).ready(function() {
   $('#participant').keyup(addExpenseOnKeyPress);
   $('#submit_expenses').bind('click', function() {
     var expenses = [];
+    var participantsWithoutExpenses = [];
 
     for (var i = 0; i < participants.names.length; i++) {
-      var p = participants[participants.names[i]];
+      var name = participants.names[i];
+      var p = participants[name];
 
       if (p === undefined) {
-        // ignore it
+        // create a new one with empty expenses
+        participantsWithoutExpenses.push(participants.getParticipants(name));
       } else {
         expenses.push(p);
       }

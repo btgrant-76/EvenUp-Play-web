@@ -73,16 +73,19 @@ object Expenses extends Controller {
   }
 
   def calculateExpenses = Action(parse.json) { request =>
+    println("called calculateExpenses")
     val participants = request.body.as[Seq[Participant]]
     val payments = new ExpenseGroup(participants).calculatePayments
 
     val resourceId = UUID.randomUUID().toString
     Cache.set(resourceId, (participants, payments), 7200)
 
+    println("returning...")
     Created.withHeaders("Location" -> s"/calculations/$resourceId")
   }
 
   def displayCalculations(resourceId: String) = Action {
+    println("called displayCalculations")
     if ("dev" == resourceId) {
       val participantsWithExpenses = Json.parse(TEST_JSON).as[Seq[Participant]]
       val payments = new ExpenseGroup(participantsWithExpenses).calculatePayments // generatePayments
