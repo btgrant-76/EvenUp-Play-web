@@ -20,14 +20,14 @@
 
         <br>
 
-        <label for="description">Description:</label>
-        <input id="description" name="description" autofocus required/>
+        <label for="amount">Amount:</label>
+        <input autofocus id="amount" name="amount" type="number" value="0.00"
+               step=".01" min="0.00" />
 
         <br>
 
-        <label for="amount">Amount:</label>
-        <input id="amount" name="amount" type="number" value="0.00"
-               step=".01" min="0.00" required/>
+        <label for="description">Description:</label>
+        <input id="description" name="description" />
         <button id='add_expense'>+</button>
     </div>
     <div id="expenses"></div>

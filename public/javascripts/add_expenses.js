@@ -117,7 +117,10 @@ $(document).ready(function() {
     zeroOutAmountField();
     var descriptionField = $('#description');
     descriptionField.val('');
-    descriptionField.focus();
+    // descriptionField.focus();
+    var amountField = $('#amount')
+    amountField.focus();
+    amountField.select();
   }
 
   function updateExpenses() {
@@ -169,15 +172,16 @@ $(document).ready(function() {
   $('#participant').keyup(addExpenseOnKeyPress);
   $('#submit_expenses').bind('click', function() {
     var expenses = [];
-    var participantsWithoutExpenses = [];
+    var namesDropdown = document.getElementById('participant');
 
-    for (var i = 0; i < participants.names.length; i++) {
-      var name = participants.names[i];
+    for (var i = 0; i < namesDropdown.length; i++) {
+      var name = namesDropdown.options[i].text;
       var p = participants[name];
 
       if (p === undefined) {
+        console.log('got undefined for ' + name);
         // create a new one with empty expenses
-        participantsWithoutExpenses.push(participants.getParticipants(name));
+        expenses.push(participants.getParticipants(name));
       } else {
         expenses.push(p);
       }
