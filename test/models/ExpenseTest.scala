@@ -24,6 +24,18 @@ class ExpenseTest extends FunSuite {
     }
   }
 
+  test("An Expense cannot have an blank description") {
+    intercept[IllegalArgumentException] {
+      new Expense(5.32, "   ")
+    }
+  }
+
+  test("An Expense cannot have an null description") {
+    intercept[IllegalArgumentException] {
+      new Expense(5.32, null)
+    }
+  }
+
   test("JSON is parsed to Expense instances") {
     val singleExpense = Json.parse("""{"description" : "Maker's Mark", "amount" : 22.44}""")
     val exp: Expense = singleExpense.as[Expense] // implicit (jsonReads)

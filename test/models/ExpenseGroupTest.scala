@@ -3,6 +3,7 @@ package models
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 
+// TODO get rid of the deprecated stuff
 class ExpenseGroupTest extends FunSuite with Matchers {
 
   val brian = Participant("Brian")
